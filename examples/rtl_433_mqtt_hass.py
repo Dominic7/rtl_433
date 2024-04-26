@@ -190,7 +190,7 @@ mappings = {
         "object_suffix": "",
         "config": {
             "name": "Protocol",
-            "enabled_by_default": True,
+            "enabled_by_default": False,
         },
     },
     "flags_1": {
@@ -214,10 +214,11 @@ mappings = {
         "object_suffix": "gal",
         "config": {
             "device_class": "water",
-            "name": "Water",
+            "name": "Water Meter",
             "enabled_by_default": True,
+            "unit_of_measurement": "gal"
             "value_template": "{{ value|int }}",
-            "state_class": "measurement",
+            "state_class": "total_increasing",
         },
     },
     "freq1": {
