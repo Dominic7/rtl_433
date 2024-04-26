@@ -189,7 +189,6 @@ mappings = {
         "device_type": "sensor",
         "object_suffix": "",
         "config": {
-            "device_class": "none",
             "name": "Protocol",
             "entity_category": "diagnostic",
             "enabled_by_default": True,
@@ -199,7 +198,6 @@ mappings = {
         "device_type": "sensor",
         "object_suffix": "",
         "config": {
-            "device_class": "none",
             "name": "Flags1",
             "entity_category": "diagnostic",
             "enabled_by_default": True,
@@ -209,7 +207,6 @@ mappings = {
         "device_type": "sensor",
         "object_suffix": "",
         "config": {
-            "device_class": "none",
             "name": "Flags2",
             "entity_category": "diagnostic",
             "enabled_by_default": True,
