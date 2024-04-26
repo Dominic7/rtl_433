@@ -189,9 +189,7 @@ mappings = {
         "device_type": "sensor",
         "object_suffix": "",
         "config": {
-            "device_class":"",
             "name": "Protocol",
-            "entity_category": "diagnostic",
             "enabled_by_default": True,
         },
     },
@@ -199,9 +197,7 @@ mappings = {
         "device_type": "sensor",
         "object_suffix": "",
         "config": {
-            "device_class":"",
             "name": "Flags1",
-            "entity_category": "diagnostic",
             "enabled_by_default": True,
         },
     },
@@ -209,9 +205,7 @@ mappings = {
         "device_type": "sensor",
         "object_suffix": "",
         "config": {
-            "device_class":"",
             "name": "Flags2",
-            "entity_category": "diagnostic",
             "enabled_by_default": True,
         },
     },
@@ -221,7 +215,6 @@ mappings = {
         "config": {
             "device_class": "water",
             "name": "Water",
-            "entity_category": "",
             "enabled_by_default": True,
             "value_template": "{{ value|int }}",
             "state_class": "measurement",
