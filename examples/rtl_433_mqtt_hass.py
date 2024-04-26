@@ -4,7 +4,7 @@
 from __future__ import print_function
 from __future__ import with_statement
 
-AP_DESCRIPTION="""
+AP_DESCRIPTION = """
 Publish Home Assistant MQTT auto discovery topics for rtl_433 devices.
 
 rtl_433_mqtt_hass.py connects to MQTT and subscribes to the rtl_433
@@ -17,7 +17,7 @@ what MQTT topics to subscribe to in order to receive the data published
 as device topics by MQTT.
 """
 
-AP_EPILOG="""
+AP_EPILOG = """
 It is strongly recommended to run rtl_433 with "-C si".
 This script requires rtl_433 to publish both event messages and device
 messages. If you've changed the device topic in rtl_433, use the same device
@@ -90,7 +90,6 @@ There is a single global set of field mappings to Home Assistant meta data.
 """
 
 
-
 # import daemon
 
 
@@ -106,8 +105,20 @@ import re
 discovery_timeouts = {}
 # Fields that get ignored when publishing to Home Assistant
 # (reduces noise to help spot missing field mappings)
-SKIP_KEYS = [ "type", "model", "subtype", "channel", "id", "mic", "mod",
-                "freq", "sequence_num", "message_type", "exception", "raw_msg" ]
+SKIP_KEYS = [
+    "type",
+    "model",
+    "subtype",
+    "channel",
+    "id",
+    "mic",
+    "mod",
+    "freq",
+    "sequence_num",
+    "message_type",
+    "exception",
+    "raw_msg",
+]
 
 
 # Global mapping of rtl_433 field names to Home Assistant metadata.
@@ -123,8 +134,8 @@ mappings = {
             "name": "Temperature",
             "unit_of_measurement": "°C",
             "value_template": "{{ value|float|round(1) }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
     "temperature_1_C": {
         "device_type": "sensor",
@@ -134,8 +145,8 @@ mappings = {
             "name": "Temperature 1",
             "unit_of_measurement": "°C",
             "value_template": "{{ value|float|round(1) }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
     "temperature_2_C": {
         "device_type": "sensor",
@@ -145,8 +156,8 @@ mappings = {
             "name": "Temperature 2",
             "unit_of_measurement": "°C",
             "value_template": "{{ value|float|round(1) }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
     "temperature_F": {
         "device_type": "sensor",
@@ -156,8 +167,8 @@ mappings = {
             "name": "Temperature",
             "unit_of_measurement": "°F",
             "value_template": "{{ value|float|round(1) }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
     # This diagnostic sensor is useful to see when a device last sent a value,
     # even if the value didn't change.
@@ -171,71 +182,70 @@ mappings = {
             "name": "Timestamp",
             "entity_category": "diagnostic",
             "enabled_by_default": False,
-            "icon": "mdi:clock-in"
-        }
+            "icon": "mdi:clock-in",
+        },
     },
-
     "protocol": {
-       "device_type": "sensor",
+        "device_type": "sensor",
         "object_suffix": "",
         "config": {
             "device_class": "none",
             "name": "Protocol",
             "entity_category": "diagnostic",
-            "enabled_by_default": true
-        }
+            "enabled_by_default": True,
+        },
     },
     "flags_1": {
-       "device_type": "sensor",
+        "device_type": "sensor",
         "object_suffix": "",
         "config": {
             "device_class": "none",
             "name": "Flags1",
             "entity_category": "diagnostic",
-            "enabled_by_default": true
-        }
+            "enabled_by_default": True,
+        },
     },
     "flags_2": {
-       "device_type": "sensor",
+        "device_type": "sensor",
         "object_suffix": "",
         "config": {
             "device_class": "none",
             "name": "Flags2",
             "entity_category": "diagnostic",
-            "enabled_by_default": true
-        }
+            "enabled_by_default": True,
+        },
     },
     "volume_gal": {
-       "device_type": "sensor",
+        "device_type": "sensor",
         "object_suffix": "gal",
         "config": {
             "device_class": "water",
             "name": "Water",
             "entity_category": "",
-            "enabled_by_default": true,
+            "enabled_by_default": True,
             "value_template": "{{ value|int }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
     "freq1": {
-       "device_type": "sensor",
+        "device_type": "sensor",
         "object_suffix": "",
         "config": {
             "device_class": "frequency",
             "name": "Frequency 1",
             "entity_category": "diagnostic",
-            "enabled_by_default": true
-        }
+            "enabled_by_default": True,
+        },
     },
     "freq2": {
-       "device_type": "sensor",
+        "device_type": "sensor",
         "object_suffix": "",
         "config": {
             "device_class": "frequency",
             "name": "Frequency 2",
             "entity_category": "diagnostic",
-            "enabled_by_default": true
-        }
+            "enabled_by_default": True,
+        },
     },
     "battery_ok": {
         "device_type": "sensor",
@@ -246,10 +256,9 @@ mappings = {
             "unit_of_measurement": "%",
             "value_template": "{{ float(value) * 99 + 1 }}",
             "state_class": "measurement",
-            "entity_category": "diagnostic"
-        }
+            "entity_category": "diagnostic",
+        },
     },
-
     "battery_mV": {
         "device_type": "sensor",
         "object_suffix": "mV",
@@ -259,10 +268,9 @@ mappings = {
             "unit_of_measurement": "mV",
             "value_template": "{{ float(value) }}",
             "state_class": "measurement",
-            "entity_category": "diagnostic"
-        }
+            "entity_category": "diagnostic",
+        },
     },
-
     "humidity": {
         "device_type": "sensor",
         "object_suffix": "H",
@@ -271,8 +279,8 @@ mappings = {
             "name": "Humidity",
             "unit_of_measurement": "%",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
     "humidity_1": {
         "device_type": "sensor",
@@ -282,8 +290,8 @@ mappings = {
             "name": "Humidity 1",
             "unit_of_measurement": "%",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
     "humidity_2": {
         "device_type": "sensor",
@@ -293,10 +301,9 @@ mappings = {
             "name": "Humidity 2",
             "unit_of_measurement": "%",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "moisture": {
         "device_type": "sensor",
         "object_suffix": "M",
@@ -305,10 +312,9 @@ mappings = {
             "name": "Moisture",
             "unit_of_measurement": "%",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "detect_wet": {
         "device_type": "binary_sensor",
         "object_suffix": "moisture",
@@ -317,10 +323,9 @@ mappings = {
             "device_class": "moisture",
             "force_update": "true",
             "payload_on": "1",
-            "payload_off": "0"
-        }
+            "payload_off": "0",
+        },
     },
-
     "pressure_hPa": {
         "device_type": "sensor",
         "object_suffix": "P",
@@ -329,10 +334,9 @@ mappings = {
             "name": "Pressure",
             "unit_of_measurement": "hPa",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "pressure_kPa": {
         "device_type": "sensor",
         "object_suffix": "P",
@@ -341,10 +345,9 @@ mappings = {
             "name": "Pressure",
             "unit_of_measurement": "kPa",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "wind_speed_km_h": {
         "device_type": "sensor",
         "object_suffix": "WS",
@@ -353,10 +356,9 @@ mappings = {
             "name": "Wind Speed",
             "unit_of_measurement": "km/h",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "wind_avg_km_h": {
         "device_type": "sensor",
         "object_suffix": "WS",
@@ -365,10 +367,9 @@ mappings = {
             "name": "Wind Speed",
             "unit_of_measurement": "km/h",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "wind_avg_mi_h": {
         "device_type": "sensor",
         "object_suffix": "WS",
@@ -377,10 +378,9 @@ mappings = {
             "name": "Wind Speed",
             "unit_of_measurement": "mi/h",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "wind_avg_m_s": {
         "device_type": "sensor",
         "object_suffix": "WS",
@@ -389,10 +389,9 @@ mappings = {
             "name": "Wind Average",
             "unit_of_measurement": "km/h",
             "value_template": "{{ (float(value|float) * 3.6) | round(2) }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "wind_speed_m_s": {
         "device_type": "sensor",
         "object_suffix": "WS",
@@ -401,10 +400,9 @@ mappings = {
             "name": "Wind Speed",
             "unit_of_measurement": "km/h",
             "value_template": "{{ float(value|float) * 3.6 }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "gust_speed_km_h": {
         "device_type": "sensor",
         "object_suffix": "GS",
@@ -413,10 +411,9 @@ mappings = {
             "name": "Gust Speed",
             "unit_of_measurement": "km/h",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "wind_max_km_h": {
         "device_type": "sensor",
         "object_suffix": "GS",
@@ -425,10 +422,9 @@ mappings = {
             "name": "Wind max speed",
             "unit_of_measurement": "km/h",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "wind_max_m_s": {
         "device_type": "sensor",
         "object_suffix": "GS",
@@ -437,10 +433,9 @@ mappings = {
             "name": "Wind max",
             "unit_of_measurement": "km/h",
             "value_template": "{{ (float(value|float) * 3.6) | round(2) }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "gust_speed_m_s": {
         "device_type": "sensor",
         "object_suffix": "GS",
@@ -449,10 +444,9 @@ mappings = {
             "name": "Gust Speed",
             "unit_of_measurement": "km/h",
             "value_template": "{{ float(value|float) * 3.6 }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "wind_dir_deg": {
         "device_type": "sensor",
         "object_suffix": "WD",
@@ -460,10 +454,9 @@ mappings = {
             "name": "Wind Direction",
             "unit_of_measurement": "°",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "rain_mm": {
         "device_type": "sensor",
         "object_suffix": "RT",
@@ -472,10 +465,9 @@ mappings = {
             "name": "Rain Total",
             "unit_of_measurement": "mm",
             "value_template": "{{ value|float|round(2) }}",
-            "state_class": "total_increasing"
-        }
+            "state_class": "total_increasing",
+        },
     },
-
     "rain_rate_mm_h": {
         "device_type": "sensor",
         "object_suffix": "RR",
@@ -484,10 +476,9 @@ mappings = {
             "name": "Rain Rate",
             "unit_of_measurement": "mm/h",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "rain_in": {
         "device_type": "sensor",
         "object_suffix": "RT",
@@ -496,10 +487,9 @@ mappings = {
             "name": "Rain Total",
             "unit_of_measurement": "in",
             "value_template": "{{ value|float|round(2) }}",
-            "state_class": "total_increasing"
-        }
+            "state_class": "total_increasing",
+        },
     },
-
     "rain_rate_in_h": {
         "device_type": "sensor",
         "object_suffix": "RR",
@@ -508,10 +498,9 @@ mappings = {
             "name": "Rain Rate",
             "unit_of_measurement": "mm/h",
             "value_template": "{{ (float(value|float) * 25.4) | round(2) }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "reed_open": {
         "device_type": "binary_sensor",
         "object_suffix": "reed_open",
@@ -520,10 +509,9 @@ mappings = {
             "force_update": "true",
             "payload_on": "1",
             "payload_off": "0",
-            "entity_category": "diagnostic"
-        }
+            "entity_category": "diagnostic",
+        },
     },
-
     "contact_open": {
         "device_type": "binary_sensor",
         "object_suffix": "contact_open",
@@ -532,10 +520,9 @@ mappings = {
             "force_update": "true",
             "payload_on": "1",
             "payload_off": "0",
-            "entity_category": "diagnostic"
-        }
+            "entity_category": "diagnostic",
+        },
     },
-
     "tamper": {
         "device_type": "binary_sensor",
         "object_suffix": "tamper",
@@ -544,10 +531,9 @@ mappings = {
             "force_update": "true",
             "payload_on": "1",
             "payload_off": "0",
-            "entity_category": "diagnostic"
-        }
+            "entity_category": "diagnostic",
+        },
     },
-
     "alarm": {
         "device_type": "binary_sensor",
         "object_suffix": "alarm",
@@ -556,10 +542,9 @@ mappings = {
             "force_update": "true",
             "payload_on": "1",
             "payload_off": "0",
-            "entity_category": "diagnostic"
-        }
+            "entity_category": "diagnostic",
+        },
     },
-
     "rssi": {
         "device_type": "sensor",
         "object_suffix": "rssi",
@@ -568,10 +553,9 @@ mappings = {
             "unit_of_measurement": "dB",
             "value_template": "{{ value|float|round(2) }}",
             "state_class": "measurement",
-            "entity_category": "diagnostic"
-        }
+            "entity_category": "diagnostic",
+        },
     },
-
     "snr": {
         "device_type": "sensor",
         "object_suffix": "snr",
@@ -580,10 +564,9 @@ mappings = {
             "unit_of_measurement": "dB",
             "value_template": "{{ value|float|round(2) }}",
             "state_class": "measurement",
-            "entity_category": "diagnostic"
-        }
+            "entity_category": "diagnostic",
+        },
     },
-
     "noise": {
         "device_type": "sensor",
         "object_suffix": "noise",
@@ -592,10 +575,9 @@ mappings = {
             "unit_of_measurement": "dB",
             "value_template": "{{ value|float|round(2) }}",
             "state_class": "measurement",
-            "entity_category": "diagnostic"
-        }
+            "entity_category": "diagnostic",
+        },
     },
-
     "depth_cm": {
         "device_type": "sensor",
         "object_suffix": "D",
@@ -603,10 +585,9 @@ mappings = {
             "name": "Depth",
             "unit_of_measurement": "cm",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "power_W": {
         "device_type": "sensor",
         "object_suffix": "watts",
@@ -615,10 +596,9 @@ mappings = {
             "name": "Power",
             "unit_of_measurement": "W",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "energy_kWh": {
         "device_type": "sensor",
         "object_suffix": "kwh",
@@ -627,10 +607,9 @@ mappings = {
             "name": "Energy",
             "unit_of_measurement": "kWh",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "current_A": {
         "device_type": "sensor",
         "object_suffix": "A",
@@ -639,10 +618,9 @@ mappings = {
             "name": "Current",
             "unit_of_measurement": "A",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "voltage_V": {
         "device_type": "sensor",
         "object_suffix": "V",
@@ -651,10 +629,9 @@ mappings = {
             "name": "Voltage",
             "unit_of_measurement": "V",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "light_lux": {
         "device_type": "sensor",
         "object_suffix": "lux",
@@ -663,8 +640,8 @@ mappings = {
             "name": "Outside Luminance",
             "unit_of_measurement": "lx",
             "value_template": "{{ value|int }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
     "lux": {
         "device_type": "sensor",
@@ -674,10 +651,9 @@ mappings = {
             "name": "Outside Luminance",
             "unit_of_measurement": "lx",
             "value_template": "{{ value|int }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "uv": {
         "device_type": "sensor",
         "object_suffix": "uv",
@@ -685,8 +661,8 @@ mappings = {
             "name": "UV Index",
             "unit_of_measurement": "UV Index",
             "value_template": "{{ value|float|round(1) }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
     "uvi": {
         "device_type": "sensor",
@@ -695,10 +671,9 @@ mappings = {
             "name": "UV Index",
             "unit_of_measurement": "UV Index",
             "value_template": "{{ value|float|round(1) }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "storm_dist_km": {
         "device_type": "sensor",
         "object_suffix": "stdist",
@@ -706,10 +681,9 @@ mappings = {
             "name": "Lightning Distance",
             "unit_of_measurement": "km",
             "value_template": "{{ value|int }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "storm_dist": {
         "device_type": "sensor",
         "object_suffix": "stdist",
@@ -717,10 +691,9 @@ mappings = {
             "name": "Lightning Distance",
             "unit_of_measurement": "mi",
             "value_template": "{{ value|int }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "strike_distance": {
         "device_type": "sensor",
         "object_suffix": "stdist",
@@ -728,20 +701,18 @@ mappings = {
             "name": "Lightning Distance",
             "unit_of_measurement": "mi",
             "value_template": "{{ value|int }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "strike_count": {
         "device_type": "sensor",
         "object_suffix": "strcnt",
         "config": {
             "name": "Lightning Strike Count",
             "value_template": "{{ value|int }}",
-            "state_class": "total_increasing"
-        }
+            "state_class": "total_increasing",
+        },
     },
-
     "consumption_data": {
         "device_type": "sensor",
         "object_suffix": "consumption",
@@ -749,9 +720,8 @@ mappings = {
             "name": "SCM Consumption Value",
             "value_template": "{{ value|int }}",
             "state_class": "total_increasing",
-        }
+        },
     },
-
     "consumption": {
         "device_type": "sensor",
         "object_suffix": "consumption",
@@ -759,29 +729,26 @@ mappings = {
             "name": "SCMplus Consumption Value",
             "value_template": "{{ value|int }}",
             "state_class": "total_increasing",
-        }
+        },
     },
-
     "channel": {
         "device_type": "device_automation",
         "object_suffix": "CH",
         "config": {
-           "automation_type": "trigger",
-           "type": "button_short_release",
-           "subtype": "button_1",
-        }
+            "automation_type": "trigger",
+            "type": "button_short_release",
+            "subtype": "button_1",
+        },
     },
-
     "button": {
         "device_type": "device_automation",
         "object_suffix": "BTN",
         "config": {
-           "automation_type": "trigger",
-           "type": "button_short_release",
-           "subtype": "button_2",
-        }
+            "automation_type": "trigger",
+            "type": "button_short_release",
+            "subtype": "button_2",
+        },
     },
-
     # WH45, WH290
     "pm2_5_ug_m3": {
         "device_type": "sensor",
@@ -791,10 +758,9 @@ mappings = {
             "name": "PM 2.5 Concentration",
             "unit_of_measurement": "µg/m³",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     # WH45
     "pm10_ug_m3": {
         "device_type": "sensor",
@@ -804,10 +770,9 @@ mappings = {
             "name": "PM 10 Concentration",
             "unit_of_measurement": "µg/m³",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     # WH290
     "estimated_pm10_0_ug_m3": {
         "device_type": "sensor",
@@ -817,10 +782,9 @@ mappings = {
             "name": "Estimated PM 10 Concentration",
             "unit_of_measurement": "µg/m³",
             "value_template": "{{ value|float }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     # WH45
     "co2_ppm": {
         "device_type": "sensor",
@@ -830,10 +794,9 @@ mappings = {
             "name": "CO2 Concentration",
             "unit_of_measurement": "ppm",
             "value_template": "{{ value|int }}",
-            "state_class": "measurement"
-        }
+            "state_class": "measurement",
+        },
     },
-
     "ext_power": {
         "device_type": "binary_sensor",
         "object_suffix": "extpwr",
@@ -842,17 +805,15 @@ mappings = {
             "name": "External Power",
             "payload_on": "1",
             "payload_off": "0",
-            "entity_category": "diagnostic"
-        }
+            "entity_category": "diagnostic",
+        },
     },
-
 }
 
 # Use secret_knock to trigger device automations for Honeywell ActivLink
 # doorbells. We have this outside of mappings as we need to configure two
 # different configuration topics.
 secret_knock_mappings = [
-
     {
         "device_type": "device_automation",
         "object_suffix": "Knock",
@@ -861,9 +822,8 @@ secret_knock_mappings = [
             "type": "button_short_release",
             "subtype": "button_1",
             "payload": 0,
-        }
+        },
     },
-
     {
         "device_type": "device_automation",
         "object_suffix": "Secret-Knock",
@@ -872,12 +832,14 @@ secret_knock_mappings = [
             "type": "button_triple_press",
             "subtype": "button_1",
             "payload": 1,
-        }
+        },
     },
-
 ]
 
-TOPIC_PARSE_RE = re.compile(r'\[(?P<slash>/?)(?P<token>[^\]:]+):?(?P<default>[^\]:]*)\]')
+TOPIC_PARSE_RE = re.compile(
+    r"\[(?P<slash>/?)(?P<token>[^\]:]+):?(?P<default>[^\]:]*)\]"
+)
+
 
 def mqtt_connect(client, userdata, flags, rc):
     """Callback for MQTT connects."""
@@ -913,11 +875,8 @@ def mqtt_message(client, userdata, msg):
 
 def sanitize(text):
     """Sanitize a name for Graphite/MQTT use."""
-    return (text
-            .replace(" ", "_")
-            .replace("/", "_")
-            .replace(".", "_")
-            .replace("&", ""))
+    return text.replace(" ", "_").replace("/", "_").replace(".", "_").replace("&", "")
+
 
 def rtl_433_device_info(data, topic_prefix):
     """Return rtl_433 device topic to subscribe to for a data element, based on the
@@ -929,12 +888,12 @@ def rtl_433_device_info(data, topic_prefix):
     # The default for args.device_topic_suffix is the same topic structure
     # as set by default in rtl433 config
     for match in re.finditer(TOPIC_PARSE_RE, args.device_topic_suffix):
-        path_elements.append(args.device_topic_suffix[last_match_end:match.start()])
+        path_elements.append(args.device_topic_suffix[last_match_end : match.start()])
         key = match.group(2)
         if key in data:
             # If we have this key, prepend a slash if needed
             if match.group(1):
-                path_elements.append('/')
+                path_elements.append("/")
             element = sanitize(str(data[key]))
             path_elements.append(element)
             id_elements.append(element)
@@ -942,8 +901,8 @@ def rtl_433_device_info(data, topic_prefix):
             path_elements.append(match.group(3))
         last_match_end = match.end()
 
-    path = ''.join(list(filter(lambda item: item, path_elements)))
-    id = '-'.join(id_elements)
+    path = "".join(list(filter(lambda item: item, path_elements)))
+    id = "-".join(id_elements)
     return (f"{topic_prefix}/{path}", id)
 
 
@@ -955,7 +914,9 @@ def publish_config(mqttc, topic, model, object_id, mapping, key=None):
     object_suffix = mapping["object_suffix"]
     object_name = "-".join([object_id, object_suffix])
 
-    path = "/".join([args.discovery_prefix, device_type, object_id, object_name, "config"])
+    path = "/".join(
+        [args.discovery_prefix, device_type, object_id, object_name, "config"]
+    )
 
     # check timeout
     now = time.time()
@@ -971,15 +932,22 @@ def publish_config(mqttc, topic, model, object_id, mapping, key=None):
     # Device Automation configuration is in a different structure compared to
     # all other mqtt discovery types.
     # https://www.home-assistant.io/integrations/device_trigger.mqtt/
-    if device_type == 'device_automation':
+    if device_type == "device_automation":
         config["topic"] = topic
-        config["platform"] = 'mqtt'
+        config["platform"] = "mqtt"
     else:
-        readable_name = mapping["config"]["name"] if "name" in mapping["config"] else key
+        readable_name = (
+            mapping["config"]["name"] if "name" in mapping["config"] else key
+        )
         config["state_topic"] = topic
         config["unique_id"] = object_name
         config["name"] = readable_name
-    config["device"] = { "identifiers": [object_id], "name": object_id, "model": model, "manufacturer": "rtl_433" }
+    config["device"] = {
+        "identifiers": [object_id],
+        "name": object_id,
+        "model": model,
+        "manufacturer": "rtl_433",
+    }
 
     if args.force_update:
         config["force_update"] = "true"
@@ -992,6 +960,7 @@ def publish_config(mqttc, topic, model, object_id, mapping, key=None):
     mqttc.publish(path, json.dumps(config), retain=args.retain)
 
     return True
+
 
 def bridge_event_to_hass(mqttc, topic_prefix, data):
     """Translate some rtl_433 sensor data to Home Assistant auto discovery."""
@@ -1014,7 +983,10 @@ def bridge_event_to_hass(mqttc, topic_prefix, data):
 
     if args.ids and "id" in data and data.get("id") not in args.ids:
         # not in the safe list
-        logging.debug("Device (%s) is not in the desired list of device ids: [%s]" % (data["id"], ids))
+        logging.debug(
+            "Device (%s) is not in the desired list of device ids: [%s]"
+            % (data["id"], ids)
+        )
         return
 
     # detect known attributes
@@ -1077,47 +1049,89 @@ def run():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(format='[%(asctime)s] %(levelname)s:%(name)s:%(message)s',datefmt='%Y-%m-%dT%H:%M:%S%z')
+    logging.basicConfig(
+        format="[%(asctime)s] %(levelname)s:%(name)s:%(message)s",
+        datefmt="%Y-%m-%dT%H:%M:%S%z",
+    )
     logging.getLogger().setLevel(logging.INFO)
 
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     description=AP_DESCRIPTION,
-                                     epilog=AP_EPILOG)
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=AP_DESCRIPTION,
+        epilog=AP_EPILOG,
+    )
 
     parser.add_argument("-d", "--debug", action="store_true")
     parser.add_argument("-q", "--quiet", action="store_true")
     parser.add_argument("-u", "--user", type=str, help="MQTT username")
     parser.add_argument("-P", "--password", type=str, help="MQTT password")
-    parser.add_argument("-H", "--host", type=str, default="127.0.0.1",
-                        help="MQTT hostname to connect to (default: %(default)s)")
-    parser.add_argument("-p", "--port", type=int, default=1883,
-                        help="MQTT port (default: %(default)s)")
-    parser.add_argument("-c", "--ca_cert", type=str, help="MQTT TLS CA certificate path")
+    parser.add_argument(
+        "-H",
+        "--host",
+        type=str,
+        default="127.0.0.1",
+        help="MQTT hostname to connect to (default: %(default)s)",
+    )
+    parser.add_argument(
+        "-p", "--port", type=int, default=1883, help="MQTT port (default: %(default)s)"
+    )
+    parser.add_argument(
+        "-c", "--ca_cert", type=str, help="MQTT TLS CA certificate path"
+    )
     parser.add_argument("-r", "--retain", action="store_true")
-    parser.add_argument("-f", "--force_update", action="store_true",
-                        help="Append 'force_update = true' to all configs.")
-    parser.add_argument("-R", "--rtl-topic", type=str,
-                        default="rtl_433/+/events",
-                        dest="rtl_topic",
-                        help="rtl_433 MQTT event topic to subscribe to (default: %(default)s)")
-    parser.add_argument("-D", "--discovery-prefix", type=str,
-                        dest="discovery_prefix",
-                        default="homeassistant",
-                        help="Home Assistant MQTT topic prefix (default: %(default)s)")
+    parser.add_argument(
+        "-f",
+        "--force_update",
+        action="store_true",
+        help="Append 'force_update = true' to all configs.",
+    )
+    parser.add_argument(
+        "-R",
+        "--rtl-topic",
+        type=str,
+        default="rtl_433/+/events",
+        dest="rtl_topic",
+        help="rtl_433 MQTT event topic to subscribe to (default: %(default)s)",
+    )
+    parser.add_argument(
+        "-D",
+        "--discovery-prefix",
+        type=str,
+        dest="discovery_prefix",
+        default="homeassistant",
+        help="Home Assistant MQTT topic prefix (default: %(default)s)",
+    )
     # This defaults to the rtl433 config default, so we assemble the same topic structure
-    parser.add_argument("-T", "--device-topic_suffix", type=str,
-                        dest="device_topic_suffix",
-                        default="devices[/type][/model][/subtype][/channel][/id]",
-                        help="rtl_433 device topic suffix (default: %(default)s)")
-    parser.add_argument("-i", "--interval", type=int,
-                        dest="discovery_interval",
-                        default=600,
-                        help="Interval to republish config topics in seconds (default: %(default)d)")
-    parser.add_argument("-x", "--expire-after", type=int,
-                        dest="expire_after",
-                        help="Number of seconds with no updates after which the sensor becomes unavailable")
-    parser.add_argument("-I", "--ids", type=int, nargs="+",
-                        help="ID's of devices that will be discovered (omit for all)")
+    parser.add_argument(
+        "-T",
+        "--device-topic_suffix",
+        type=str,
+        dest="device_topic_suffix",
+        default="devices[/type][/model][/subtype][/channel][/id]",
+        help="rtl_433 device topic suffix (default: %(default)s)",
+    )
+    parser.add_argument(
+        "-i",
+        "--interval",
+        type=int,
+        dest="discovery_interval",
+        default=600,
+        help="Interval to republish config topics in seconds (default: %(default)d)",
+    )
+    parser.add_argument(
+        "-x",
+        "--expire-after",
+        type=int,
+        dest="expire_after",
+        help="Number of seconds with no updates after which the sensor becomes unavailable",
+    )
+    parser.add_argument(
+        "-I",
+        "--ids",
+        type=int,
+        nargs="+",
+        help="ID's of devices that will be discovered (omit for all)",
+    )
     args = parser.parse_args()
 
     if args.debug and args.quiet:
@@ -1131,17 +1145,19 @@ if __name__ == "__main__":
         logging.getLogger().setLevel(logging.ERROR)
 
     # allow setting MQTT username and password via environment variables
-    if not args.user and 'MQTT_USERNAME' in os.environ:
-        args.user = os.environ['MQTT_USERNAME']
+    if not args.user and "MQTT_USERNAME" in os.environ:
+        args.user = os.environ["MQTT_USERNAME"]
 
-    if not args.password and 'MQTT_PASSWORD' in os.environ:
-        args.password = os.environ['MQTT_PASSWORD']
+    if not args.password and "MQTT_PASSWORD" in os.environ:
+        args.password = os.environ["MQTT_PASSWORD"]
 
     if not args.user or not args.password:
-        logging.warning("User or password is not set. Check credentials if subscriptions do not return messages.")
+        logging.warning(
+            "User or password is not set. Check credentials if subscriptions do not return messages."
+        )
 
     if args.ids:
-        ids = ', '.join(str(id) for id in args.ids)
+        ids = ", ".join(str(id) for id in args.ids)
         logging.info("Only discovering devices with ids: [%s]" % ids)
     else:
         logging.info("Discovering all devices")
