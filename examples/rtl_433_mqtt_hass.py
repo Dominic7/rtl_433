@@ -104,7 +104,6 @@ import re
 
 
 discovery_timeouts = {}
-
 # Fields that get ignored when publishing to Home Assistant
 # (reduces noise to help spot missing field mappings)
 SKIP_KEYS = [ "type", "model", "subtype", "channel", "id", "mic", "mod",
@@ -160,7 +159,6 @@ mappings = {
             "state_class": "measurement"
         }
     },
-
     # This diagnostic sensor is useful to see when a device last sent a value,
     # even if the value didn't change.
     # https://community.home-assistant.io/t/send-metrics-to-influxdb-at-regular-intervals/9096
@@ -214,7 +212,9 @@ mappings = {
             "device_class": "water",
             "name": "Water",
             "entity_category": "",
-            "enabled_by_default": true
+            "enabled_by_default": true,
+            "value_template": "{{ value|int }}",
+            "state_class": "measurement"
         }
     },
     "freq1": {
