@@ -177,6 +177,66 @@ mappings = {
         }
     },
 
+    "protocol": {
+       "device_type": "sensor",
+        "object_suffix": "",
+        "config": {
+            "device_class": "none",
+            "name": "Protocol",
+            "entity_category": "diagnostic",
+            "enabled_by_default": true
+        }
+    },
+    "flags_1": {
+       "device_type": "sensor",
+        "object_suffix": "",
+        "config": {
+            "device_class": "none",
+            "name": "Flags1",
+            "entity_category": "diagnostic",
+            "enabled_by_default": true
+        }
+    },
+    "flags_2": {
+       "device_type": "sensor",
+        "object_suffix": "",
+        "config": {
+            "device_class": "none",
+            "name": "Flags2",
+            "entity_category": "diagnostic",
+            "enabled_by_default": true
+        }
+    },
+    "volume_gal": {
+       "device_type": "sensor",
+        "object_suffix": "gal",
+        "config": {
+            "device_class": "water",
+            "name": "Water",
+            "entity_category": "",
+            "enabled_by_default": true
+        }
+    },
+    "freq1": {
+       "device_type": "sensor",
+        "object_suffix": "",
+        "config": {
+            "device_class": "frequency",
+            "name": "Frequency 1",
+            "entity_category": "diagnostic",
+            "enabled_by_default": true
+        }
+    },
+    "freq2": {
+       "device_type": "sensor",
+        "object_suffix": "",
+        "config": {
+            "device_class": "frequency",
+            "name": "Frequency 2",
+            "entity_category": "diagnostic",
+            "enabled_by_default": true
+        }
+    },
     "battery_ok": {
         "device_type": "sensor",
         "object_suffix": "B",
